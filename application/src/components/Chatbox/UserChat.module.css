@@ -1,0 +1,17 @@
+.userChat {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  justify-content: flex-end;
+}
+
+.userMessage {
+  background-color: #d1e7dd;
+  padding: 10px;
+  border-radius: 10px;
+  max-width: 60%;
+  word-wrap: break-word;
+  margin-left: auto;
+  white-space: pre-wrap;
+  line-height: 0.5;
+}
