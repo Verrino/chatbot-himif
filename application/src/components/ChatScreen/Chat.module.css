@@ -7,15 +7,38 @@
   align-items: center;
 }
 
-.chatBackground {
-  background-color: #a1a1a1;
-  width: 50%;
-  height: 90%;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  border-radius: 10px;
-  overflow: hidden;
+@media (min-width: 768px) {
+  .chatBackground {
+    background-color: #a1a1a1;
+    width: 60%;
+    height: 90%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+}
+
+.botName h1 {
+  font-size: 2.5rem; /* Example size for desktop */
+}
+
+@media (max-width: 767px) {
+  .chatBackground {
+    background-color: #a1a1a1;
+    width: 90%;
+    height: 90%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .botName h1 {
+    font-size: 2rem; /* Smaller font size for tablets */
+  }
 }
 
 .botName {
@@ -26,7 +49,6 @@
   align-items: center;
   justify-content: center;
   color: white;
-  font-size: 1.5em;
 }
 
 .chatArea {

@@ -1,14 +1,15 @@
 import React, { useState, useRef, useEffect } from "react";
 import styles from "./Chat.module.css";
 import UserChat from "../Chatbox/UserChat";
-import BotChat from "../Chatbox/BotChat"; // New component to handle bot responses
+import BotChat from "../Chatbox/BotChat";
 import AskService from "../../services/AskService";
 
 const Chat = () => {
   const [message, setMessage] = useState("");
-  const [chatHistory, setChatHistory] = useState([]); // Combined state for both messages and responses
-  const [isProcessing, setIsProcessing] = useState(false); // State to track bot processing
+  const [chatHistory, setChatHistory] = useState([]);
+  const [isProcessing, setIsProcessing] = useState(false);
   const textareaRef = useRef(null);
+  const endOfChatRef = useRef(null);
 
   useEffect(() => {
     if (textareaRef.current) {
@@ -16,6 +17,12 @@ const Chat = () => {
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
     }
   }, [message]);
+
+  useEffect(() => {
+    if (endOfChatRef.current) {
+      endOfChatRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [chatHistory]);
 
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
@@ -35,7 +42,7 @@ const Chat = () => {
       const question = message;
       setMessage("");
 
-      setIsProcessing(true); // Set processing state to true
+      setIsProcessing(true);
 
       try {
         const responseData = await AskService.askQuestion(question);
@@ -47,7 +54,7 @@ const Chat = () => {
         setChatHistory([...newChatHistory, { type: "bot", text: err.message }]);
       }
 
-      setIsProcessing(false); // Set processing state to false
+      setIsProcessing(false);
     }
   };
 
@@ -69,6 +76,7 @@ const Chat = () => {
               <BotChat key={index} message={msg.text} />
             )
           )}
+          <div ref={endOfChatRef} />
         </div>
         <div className={styles.inputArea}>
           <textarea
@@ -78,7 +86,7 @@ const Chat = () => {
             value={message}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
-            disabled={isProcessing} // Disable textarea while processing
+            disabled={isProcessing}
           />
         </div>
       </div>

@@ -1,49 +1,50 @@
 const AskService = {
+  requestQueue: [],
+  isProcessing: false,
+
   async askQuestion(question) {
+    return new Promise((resolve, reject) => {
+      // Add the request to the queue
+      this.requestQueue.push({ question, resolve, reject });
+      this.processQueue();
+    });
+  },
+
+  async processQueue() {
+    if (this.isProcessing || this.requestQueue.length === 0) {
+      return;
+    }
+
+    // Mark as processing
+    this.isProcessing = true;
+
+    // Get the next request from the queue
+    const { question, resolve, reject } = this.requestQueue.shift();
+
     try {
-      const responseInformation = await fetch(
-        "http://localhost:3001/api/information",
-        {
-          method: "GET",
-        }
-      );
-
-      const data = await responseInformation.json();
-
-      const assistantContent = data.information;
-
       const content = {
-        messages: [
-          {
-            role: "assistant",
-            content: assistantContent,
-          },
-          {
-            role: "user",
-            content: question,
-          },
-        ],
+        query: question,
       };
 
-      const chatResponse = await fetch(
-        "http://localhost:1234/v1/chat/completions",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(content),
-        }
-      );
+      const chatResponse = await fetch("http://192.168.31.40:5000/ask", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(content),
+      });
 
       const chatData = await chatResponse.json();
 
-      const message = chatData.choices[0].message.content;
-      return message || message.length === 0
-        ? message
-        : "Terjadi kesalahan dalam proses.";
+      const message = chatData.answer;
+      resolve(message || "Terjadi kesalahan dalam proses.");
     } catch (error) {
-      return error.message;
+      reject(error.message);
+    } finally {
+      // Mark as not processing
+      this.isProcessing = false;
+      // Process the next request in the queue
+      this.processQueue();
     }
   },
 };
